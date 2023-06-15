@@ -3,7 +3,7 @@
 import setuptools
 
 DIST_NAME = 'twtr'
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 DESCRIPTION = "Wrapper library for the Twitter API and tweepy"
 
 setuptools.setup(
