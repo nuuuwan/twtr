@@ -6,71 +6,74 @@ import tweepy
 from twtr.common import log
 from twtr.core.Tweet import Tweet
 
+MIN_TOKEN_LEN = 8
+TOKENS = [
+    'TWTR_BEARER_TOKEN',
+    'TWTR_API_KEY',
+    'TWTR_API_KEY_SECRET',
+    'TWTR_ACCESS_TOKEN',
+    'TWTR_ACCESS_TOKEN_SECRET',
+]
+
 
 class Twitter:
     @staticmethod
-    def get_vars_from_argparse():
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--TWTR_BEARER_TOKEN')
-        parser.add_argument('--TWTR_API_KEY')
-        parser.add_argument('--TWTR_API_KEY_SECRET')
-        parser.add_argument('--TWTR_ACCESS_TOKEN')
-        parser.add_argument('--TWTR_ACCESS_TOKEN_SECRET')
+    def validate(token: str, var: str):
+        if var is None or len(var) < MIN_TOKEN_LEN:
+            log.error(f'❌ {token} ("{var}") is not valid')
+            return False
+        log.debug(f'✅ {token} is valid')
+        return True
 
-        args = parser.parse_args()
-        return (
+    @staticmethod
+    def get_args():
+        parser = argparse.ArgumentParser()
+        for token in TOKENS:
+            parser.add_argument(f'--{token}')
+        return parser.parse_args()
+
+    @staticmethod
+    def get_vars_from_argparse():
+        args = Twitter.get_args()
+        vars = (
             args.TWTR_BEARER_TOKEN,
             args.TWTR_API_KEY,
             args.TWTR_API_KEY_SECRET,
             args.TWTR_ACCESS_TOKEN,
             args.TWTR_ACCESS_TOKEN_SECRET,
         )
-
-    @staticmethod
-    def get_vars_from_env():
-        return (
-            os.environ.get('TWTR_BEARER_TOKEN'),
-            os.environ.get('TWTR_API_KEY'),
-            os.environ.get('TWTR_API_KEY_SECRET'),
-            os.environ.get('TWTR_ACCESS_TOKEN'),
-            os.environ.get('TWTR_ACCESS_TOKEN_SECRET'),
-        )
+        has_errors = False
+        for token, var in zip(TOKENS, vars):
+            if not Twitter.validate(token, var):
+                has_errors = True
+        if has_errors:
+            raise ValueError('Contains Invalid Twitter tokens')
+        return vars
 
     def __init__(self):
-        vars_argparse = self.get_vars_from_argparse()
-        vars_env = self.get_vars_from_env()
-        
-        bearer_token = vars_argparse[0] or vars_env[0]
-        consumer_key = vars_argparse[1] or vars_env[1]
-        consumer_secret = vars_argparse[2] or vars_env[2]
-        access_token = vars_argparse[3] or vars_env[3]
-        access_token_secret = vars_argparse[4] or vars_env[4]
+        (
+            bearer_token,
+            consumer_key,
+            consumer_secret,
+            access_token,
+            access_token_secret,
+        ) = self.get_vars_from_argparse()
 
-        if (
-            bearer_token is None
-            or consumer_key is None
-            or consumer_secret is None
-            or access_token is None
-            or access_token_secret is None
-        ):
-            self.__client__ = None
-            self.__api__ = None
-        else:
-            self.__client__ = tweepy.Client(
-                bearer_token=bearer_token,
-                consumer_key=consumer_key,
-                consumer_secret=consumer_secret,
-                access_token=access_token,
-                access_token_secret=access_token_secret,
-            )
+        self.__client__ = tweepy.Client(
+            bearer_token=bearer_token,
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+        )
 
-            auth = tweepy.OAuth1UserHandler(
-                consumer_key=consumer_key,
-                consumer_secret=consumer_secret,
-                access_token=access_token,
-                access_token_secret=access_token_secret,
-            )
-            self.__api__ = tweepy.API(auth)
+        auth = tweepy.OAuth1UserHandler(
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+        )
+        self.__api__ = tweepy.API(auth)
 
     def check_api_and_client(self):
         if self.__client__ is None:
