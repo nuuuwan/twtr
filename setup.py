@@ -26,10 +26,7 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.10",
-    install_requires=[
-        'tweepy',
-        'utils-nuuuwan'
-    ],
+    install_requires=['tweepy', 'utils-nuuuwan'],
     test_suite='nose.collector',
     tests_require=['nose'],
 )
