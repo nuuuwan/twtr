@@ -14,23 +14,26 @@ class Twitter:
         consumer_secret=os.environ.get('TWTR_API_KEY_SECRET')
         access_token=os.environ.get('TWTR_ACCESS_TOKEN')
         access_token_secret=os.environ.get('TWTR_ACCESS_TOKEN_SECRET')
-        
-        self.__client__ = tweepy.Client(
-            bearer_token=bearer_token,
-            consumer_key=consumer_key,
-            consumer_secret=consumer_secret,
-            access_token=access_token,
-            access_token_secret=access_token_secret,
-        )
 
-        auth = tweepy.OAuth1UserHandler(
-            consumer_key=consumer_key,
-            consumer_secret=consumer_secret,
-            access_token=access_token,
-            access_token_secret=access_token_secret,
-        )
+        if bearer_token is None or consumer_key is None or consumer_secret is None or access_token is None or access_token_secret is None:
+            self.__client__ = None
+            self.__api__ = None
+        else:
+            self.__client__ = tweepy.Client(
+                bearer_token=bearer_token,
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                access_token=access_token,
+                access_token_secret=access_token_secret,
+            )
 
-        self.__api__ = tweepy.API(auth)
+            auth = tweepy.OAuth1UserHandler(
+                consumer_key=consumer_key,
+                consumer_secret=consumer_secret,
+                access_token=access_token,
+                access_token_secret=access_token_secret,
+            )
+            self.__api__ = tweepy.API(auth)
 
     def check_api_and_client(self):
         if self.__client__ is None:
