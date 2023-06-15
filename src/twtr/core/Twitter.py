@@ -38,10 +38,8 @@ class Twitter:
 
     def __init__(self):
         vars_argparse = self.get_vars_from_argparse()
-        print(vars_argparse)
         vars_env = self.get_vars_from_env()
-        print(vars_env)
-
+        
         bearer_token = vars_argparse[0] or vars_env[0]
         consumer_key = vars_argparse[1] or vars_env[1]
         consumer_secret = vars_argparse[2] or vars_env[2]
