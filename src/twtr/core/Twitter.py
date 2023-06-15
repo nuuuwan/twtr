@@ -1,3 +1,4 @@
+import argparse
 import os
 
 import tweepy
@@ -7,15 +8,45 @@ from twtr.core.Tweet import Tweet
 
 
 class Twitter:
+    @staticmethod
+    def get_vars_from_argparse():
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--TWTR_BEARER_TOKEN')
+        parser.add_argument('--TWTR_API_KEY')
+        parser.add_argument('--TWTR_API_KEY_SECRET')
+        parser.add_argument('--TWTR_ACCESS_TOKEN')
+        parser.add_argument('--TWTR_ACCESS_TOKEN_SECRET')
+
+        args = parser.parse_args()
+        return (
+            args.TWTR_BEARER_TOKEN,
+            args.TWTR_API_KEY,
+            args.TWTR_API_KEY_SECRET,
+            args.TWTR_ACCESS_TOKEN,
+            args.TWTR_ACCESS_TOKEN_SECRET,
+        )
+
+    @staticmethod
+    def get_vars_from_env():
+        return (
+            os.environ.get('TWTR_BEARER_TOKEN'),
+            os.environ.get('TWTR_API_KEY'),
+            os.environ.get('TWTR_API_KEY_SECRET'),
+            os.environ.get('TWTR_ACCESS_TOKEN'),
+            os.environ.get('TWTR_ACCESS_TOKEN_SECRET'),
+        )
+
     def __init__(self):
-        bearer_token = os.environ.get('TWTR_BEARER_TOKEN')
-        
-        # API Key and Secret (also known as Consumer Key and Secret)
-        consumer_key = os.environ.get('TWTR_API_KEY')
-        consumer_secret = os.environ.get('TWTR_API_KEY_SECRET')
-        
-        access_token = os.environ.get('TWTR_ACCESS_TOKEN')
-        access_token_secret = os.environ.get('TWTR_ACCESS_TOKEN_SECRET')
+        vars_argparse = self.get_vars_from_argparse()
+        print(vars_argparse)
+        vars_env = self.get_vars_from_env()
+        print(vars_env)
+
+        bearer_token = vars_argparse[0] or vars_env[0]
+        consumer_key = vars_argparse[1] or vars_env[1]
+        consumer_secret = vars_argparse[2] or vars_env[2]
+        access_token = vars_argparse[3] or vars_env[3]
+        access_token_secret = vars_argparse[4] or vars_env[4]
 
         if (
             bearer_token is None
@@ -96,9 +127,3 @@ class Twitter:
         except Exception as e:
             log.error(f'Failed to send tweet: {e}')
             return None
-
-
-if __name__ == '__main__':
-    tweet = Tweet('Hello World!')
-    twitter = Twitter()
-    print(twitter.send(tweet))
