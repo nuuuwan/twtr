@@ -9,9 +9,11 @@ from twtr.core.Tweet import Tweet
 class Twitter:
     def __init__(self):
         bearer_token = os.environ.get('TWTR_BEARER_TOKEN')
+        
         # API Key and Secret (also known as Consumer Key and Secret)
         consumer_key = os.environ.get('TWTR_API_KEY')
         consumer_secret = os.environ.get('TWTR_API_KEY_SECRET')
+        
         access_token = os.environ.get('TWTR_ACCESS_TOKEN')
         access_token_secret = os.environ.get('TWTR_ACCESS_TOKEN_SECRET')
 
