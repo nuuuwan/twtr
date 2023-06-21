@@ -1,5 +1,7 @@
 import argparse
 import os
+import random
+import time
 
 import tweepy
 
@@ -75,6 +77,11 @@ class Twitter:
         )
         self.__api__ = tweepy.API(auth)
 
+    def sleep_random(self):
+        t = random.randint(10, 30)
+        log.debug(f'Sleeping for {t} seconds...')
+        time.sleep(t)
+
     def check_api_and_client(self):
         if self.__client__ is None:
             raise ValueError('Client is not valid')
@@ -88,6 +95,7 @@ class Twitter:
         log.debug(f'{media=}')
         media_id = media.media_id
         log.debug(f'Uploaded media {image_path} to {media_id}.')
+        self.sleep_random()
         return media_id
 
     def __media_upload_all__(self, image_path_list: list[str]) -> list[int]:
@@ -120,6 +128,7 @@ class Twitter:
         log.debug(f'{response=}')
         tweet_id = response.data['id']
         log.debug(f'Sent tweet ({tweet_id}).')
+        self.sleep_random()
         return tweet_id
 
     def send(self, tweet: Tweet):
