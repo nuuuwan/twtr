@@ -1,14 +1,15 @@
-from utils import get_time_id
+from utils import Time, TimeFormat
 
 from twtr import Tweet, Twitter
 
 
 def main():
-    time_id = get_time_id()
+    time_id = TimeFormat.TIME.format(Time.now())
+
     twitter = Twitter()
-    tweet = Tweet(f'Hello World from {time_id}')
+    tweet = Tweet(f"Hello World from {time_id}")
     twitter.send(tweet)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
